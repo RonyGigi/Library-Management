@@ -1,0 +1,42 @@
+= doctype html
+html
+  head
+    = css
+      #search-result tr:hover {
+        background-color: lightgray;
+        cursor: pointer;
+      }
+    
+  body
+    form id="search-form" onsubmit="return false"
+      input name="search"
+      input type=submit value="Search" onclick="submitSearch();"
+    table width=100%
+      thead
+        tr style="text-align:left;"
+          th width="40%" Title 
+          th width="30%" Author 
+          th width="20%" Year
+          th width="10%" ID 
+      tbody id="search-result"
+    script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"
+    = javascript
+      function submitSearch() {
+      $.ajax( {
+        url: "/search", method: "POST", data: $("#search-form").serialize(), success: function(rawData) {
+          var parsed=JSON.parse(rawData);
+          if (!parsed) return;
+          var searchResult=$("#search-result");
+          searchResult.empty();
+          parsed.forEach(function(result) {
+            var row=$("<tr><td>" + result.Title + "</td><td>" + result.Author + "</td><td>" + result.Year + "</td><td>" + result.ID + "</td></tr>");
+            searchResult.append(row);
+            row.on("click", function() {
+              $.ajax( {
+                url: "/books/add?id=" + result.ID, method: "GET", data: $("#search-result").serialize()
+              })
+            })
+          });
+        }});
+      return false;
+      };
