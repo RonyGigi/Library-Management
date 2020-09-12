@@ -19,7 +19,7 @@ html
     div#page-switcher
       button onclick="showViewPage()" View Library 
       button onClick="showSearchPage()" Add Books
-    div#search-page style="dsiplay:none;"
+    div#search-page style="display:none;"
       form id="search-form" onsubmit="return false"
         input name="search"
         input type=submit value="Search" onclick="submitSearch();"
@@ -38,18 +38,31 @@ html
           tr style="text-align:left;"
             th width="45%" Title 
             th width="35%" Author 
-            th width="20%" Classification
+            th width="15%" Classification
+            th width="5%"
         tbody#view-results
           {{range .Books}}
-            tr
+            tr id="row-btn{{.PK}}"
               td {{.Title}}
               td {{.Author}}
               td {{.Classification}}
+              td 
+                button onclick="deleteBook({{.PK}})" Delete
           {{end}}
 
 
     script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"
     = javascript
+      function deleteBook(id){
+        $.ajax({
+          url: "/books/delete?id="+id,
+          method: "GET",
+          success: function(){
+            alert("Book Deleted");
+            $("#row-btn"+id).remove();
+          }
+        });
+      }
       function showSearchPage(){
         $('#search-page').show();
         $('#view-page').hide();
@@ -75,7 +88,8 @@ html
               success: function(data){
                 var book = JSON.parse(data)
                 if(!book) return;
-                $("#view-results").append("<tr><td>" + book.Title + "</td><td>" + book.Author + "</td><td>" + book.Classification + "</td></tr>")
+                $("#view-results").append("<tr id=\"row-btn"+book.PK+"\"><td>" + book.Title + "</td><td>" + book.Author + "</td><td>" + book.Classification + "</td><td><button onclick=deleteBook("+book.PK+")>Delete</button></td></tr>")
+                alert("Book Added");  
               }
 
             })

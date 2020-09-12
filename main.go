@@ -79,7 +79,13 @@ func main() {
 		}
 
 	})
-
+	mux.HandleFunc("/books/delete", func(w http.ResponseWriter, r *http.Request) {
+		if _, err := db.Exec("delete from book where PK=?", r.FormValue("id")); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
 	mux.HandleFunc("/books/add", func(w http.ResponseWriter, r *http.Request) {
 		var book ClassifyBookResponse
 		var err error
