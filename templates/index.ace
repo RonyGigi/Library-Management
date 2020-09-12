@@ -55,8 +55,8 @@ html
     = javascript
       function deleteBook(id){
         $.ajax({
-          url: "/books/delete?id="+id,
-          method: "GET",
+          url: "/books/"+id,
+          method: "DELETE",
           success: function(){
             alert("Book Deleted");
             $("#row-btn"+id).remove();
@@ -83,15 +83,13 @@ html
           searchResult.append(row);
           row.on("click", function() {
             $.ajax( {
-              url: "/books/add?id=" + result.ID, method: "GET", data: $("#search-result").serialize(),
-              method: "GET",
+              url: "/books/add?id=" + result.ID, method: "PUT", data: $("#search-result").serialize(),
               success: function(data){
                 var book = JSON.parse(data)
                 if(!book) return;
                 $("#view-results").append("<tr id=\"row-btn"+book.PK+"\"><td>" + book.Title + "</td><td>" + book.Author + "</td><td>" + book.Classification + "</td><td><button onclick=deleteBook("+book.PK+")>Delete</button></td></tr>")
                 alert("Book Added");  
               }
-
             })
           })
         });
